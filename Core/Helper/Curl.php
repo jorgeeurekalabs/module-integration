@@ -65,7 +65,7 @@ class Curl extends AbstractHelper
         ActiveCampaignHelper $activeCampaignHelper,
         SyncLog              $syncLog,
         SyncLogHelper           $syncLogHelper,
-        ?Client               $client = null
+        $client = null
     ) {
         $this->client = $client ?: new Client();
         $this->jsonHelper = $jsonHelper;
@@ -287,7 +287,7 @@ class Curl extends AbstractHelper
     public function graphql(
         string $query,
         array $variables = [],
-        ?string $operationName = null
+        $operationName = null
     ): array {
         $apiUrl = $this->activeCampaignHelper->getApiUrl();
         $apiKey = $this->activeCampaignHelper->getApiKey();
