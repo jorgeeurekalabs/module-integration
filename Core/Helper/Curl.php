@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 namespace ActiveCampaign\Core\Helper;
 
@@ -369,12 +368,26 @@ class Curl extends AbstractHelper
         $synclog = $this->syncLog;
         
         try {
+            if ($bodyData !== '' && is_string($bodyData)) {
+                try {
+                    $bodyDecoded = $this->jsonHelper->unserialize($bodyData);
+                    if (is_array($bodyDecoded) || is_scalar($bodyDecoded)) {
+                        $requestBodyForLog = $bodyDecoded;
+                    } else {
+                        $requestBodyForLog = $bodyData;
+                    }
+                } catch (\Exception $e) {
+                    $requestBodyForLog = $bodyData;
+                }
+            } else {
+                $requestBodyForLog = $bodyData;
+            }
             $request = [
                 'METHOD'        => $method,
                 'URL'           => $url,
                 'HTTP VERSION'  => self::HTTP_VERSION,
                 'HEADERS'       => $headers,
-                'BODY DATA'     => $bodyData
+                'BODY DATA'     => $requestBodyForLog
             ];
 
             /**
@@ -481,7 +494,7 @@ class Curl extends AbstractHelper
      *
      * @return \Magento\Framework\Phrase|string
      */
-    private function getMessage(mixed $response)
+    private function getMessage($response)
     {
         if (is_array($response)) {
             if (isset($response['message'])) {
